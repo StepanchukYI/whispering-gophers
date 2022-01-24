@@ -54,6 +54,7 @@ func main() {
 	}
 }
 
+var peers = &Peers{m: make(map[string]chan<- Message)}
 // TODO: create a global shared Peers instance
 
 type Peers struct {
@@ -93,7 +94,11 @@ func (p *Peers) List() []chan<- Message {
 }
 
 func broadcast(m Message) {
-	for /* TODO: Range over the list of peers */ {
+	for _, ch := range peers.List() {
+		select {
+			case ch <- m:
+			default: 
+		}
 		// TODO: Send a message to the channel, but don't block.
 		// Hint: Select is your friend.
 	}
@@ -110,6 +115,7 @@ func serve(c net.Conn) {
 			return
 		}
 
+		go dial(m.Addr)
 		// TODO: Launch dial in a new goroutine, to connect to the address in the message's Addr field.
 
 		fmt.Printf("%#v\n", m)
@@ -131,8 +137,16 @@ func readInput() {
 }
 
 func dial(addr string) {
+	if(addr == self){
+		return
+	}
 	// TODO: If dialing self, return.
 
+	ch := peers.Add(addr)
+	if(ch == nil) {
+		return
+	}
+	peers.Remove(addr)
 	// TODO: Add the address to the peers map.
 	// TODO: If you get a nil channel the peer is already connected, return.
 	// TODO: Remove the address from peers map when this function returns

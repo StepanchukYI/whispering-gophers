@@ -64,7 +64,7 @@ func serve(c net.Conn) {
 	}
 }
 
-// TODO: Make a new channel of Messages.
+var messagesChannel = make(chan Message)
 
 func readInput() {
 	s := bufio.NewScanner(os.Stdin)
@@ -73,6 +73,7 @@ func readInput() {
 			Addr: self,
 			Body: s.Text(),
 		}
+		messagesChannel <- m
 		// TODO: Send the message to the channel of messages.
 	}
 	if err := s.Err(); err != nil {
@@ -90,7 +91,7 @@ func dial(addr string) {
 
 	e := json.NewEncoder(c)
 
-	for /* TODO: Receive messages from the channel using range, storing them in the variable m. */ {
+	for m := range messagesChannel {
 		err := e.Encode(m)
 		if err != nil {
 			log.Println(addr, err)

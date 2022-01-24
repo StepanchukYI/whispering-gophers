@@ -31,7 +31,7 @@ var (
 )
 
 type Message struct {
-	// TODO: add ID field
+	ID string
 	Addr string
 	Body string
 }

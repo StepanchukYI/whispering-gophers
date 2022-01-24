@@ -47,6 +47,13 @@ type Message struct {
 func main() {
 	flag.Parse()
 
+
+	l, err := util.Listen()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Listening on", l.Addr())
+
 	// TODO: Create a new listener using util.Listen and put it in a variable named l.
 	// TODO: Set the global variable self with the address of the listener.
 	// TODO: Print the address to the standard output
@@ -86,7 +93,7 @@ func dial(addr string) {
 	e := json.NewEncoder(c)
 	for s.Scan() {
 		m := Message{
-			// TODO: Put the self variable in the new Addr field.
+			Addr: self,
 			Body: s.Text(),
 		}
 		err := e.Encode(m)
