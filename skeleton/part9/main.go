@@ -169,7 +169,12 @@ func dial(addr string) {
 	}
 }
 
+type seenIds struct {
+	m map[string]bool
+	mu sync.Mutex // Protect
+}
 // TODO: Create a new map of seen message IDs and a mutex to protect it.
+var seen = &seenIds{}
 
 // Seen returns true if the specified id has been seen before.
 // If not, it returns false and marks the given id as "seen".
@@ -177,4 +182,9 @@ func Seen(id string) bool {
 	// TODO: Get a write lock on the seen message IDs map and unlock it at before returning.
 	// TODO: Check if the id has been seen before and return that later.
 	// TODO: Mark the ID as seen in the map.
+	seen.mu.Lock()
+	exists := seen.m[id]
+	seen.m[id] = true
+	seen.mu.Unlock()
+	return exists
 }
