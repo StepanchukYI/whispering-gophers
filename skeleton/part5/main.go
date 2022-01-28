@@ -52,6 +52,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	self = l.Addr().String()
 	log.Println("Listening on", l.Addr())
 
 	// TODO: Create a new listener using util.Listen and put it in a variable named l.
